@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CollabBridge — Creator Dashboard</title>
+  <link rel="stylesheet" href="creator.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!--NAVBAR-->
+<nav class="nav">
+  <div class="nav__left">
+    <a href="../landing-page/index.html" class="nav__logo">
+      <div class="logo-icon"><div class="logo-inner"></div></div>
+      <span>CollabBridge</span>
+    </a>
+  </div>
+  <div class="nav__right">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <span id="themeIcon">🌙</span>
+    </button>
+    <!-- Messages -->
+    <button class="nav-icon-btn" onclick="openMessages()" title="Messages">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-badge" id="msgBadge">3</span>
+    </button>
+    <!-- Notifications -->
+    <button class="nav-icon-btn" id="notifBtn" onclick="toggleNotifications()" title="Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="nav-badge" id="notifBadge">2</span>
+    </button>
+    <div class="user-pill">
+      <div class="user-avatar">S</div>
+      <span id="userName">Sarah</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+</nav>
+
+<!-- Notification Panel -->
+<div class="notif-panel hidden" id="notifPanel">
+  <div class="notif-panel__header">
+    <span>Notifications</span>
+    <button onclick="clearNotifications()" class="notif-clear">Clear all</button>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="notif-item">
+      <div class="notif-dot notif-dot--yellow"></div>
+      <div><div class="notif-text"><strong>TechFlow</strong> sent you a collaboration request</div><div class="notif-time">2 hours ago</div></div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-dot notif-dot--green"></div>
+      <div><div class="notif-text"><strong>$1,200</strong> payment received from EcoStyle</div><div class="notif-time">Yesterday</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Messages Panel -->
+<div class="messages-panel hidden" id="messagesPanel">
+  <div class="notif-panel__header">
+    <span>Messages</span>
+    <button onclick="document.getElementById('messagesPanel').classList.add('hidden')" class="notif-clear">Close</button>
+  </div>
+  <div class="msg-list">
+    <div class="msg-item"><div class="msg-avatar" style="background:linear-gradient(135deg,#4cc9f0,#4361ee)">TF</div><div><div class="msg-name">TechFlow</div><div class="msg-preview">Looking forward to working with you...</div></div><div class="msg-time">2h</div></div>
+    <div class="msg-item"><div class="msg-avatar" style="background:linear-gradient(135deg,#06d6a0,#1b9aaa)">ES</div><div><div class="msg-name">EcoStyle</div><div class="msg-preview">Payment has been processed ✓</div></div><div class="msg-time">1d</div></div>
+    <div class="msg-item"><div class="msg-avatar" style="background:linear-gradient(135deg,#f4a261,#e76f51)">HH</div><div><div class="msg-name">HealthHub</div><div class="msg-preview">Can we schedule a quick call?</div></div><div class="msg-time">2d</div></div>
+  </div>
+</div>
+
+<!--MAIN-->
+<main class="main">
+
+  <!-- Welcome Header -->
+  <div class="welcome-header reveal">
+    <div>
+      <h1 class="welcome-title">Welcome back, <span id="welcomeName">Sarah</span> 👋</h1>
+      <p class="welcome-sub" id="welcomeSub">You have <strong>2 new collaboration requests</strong></p>
+    </div>
+    <button class="btn-find-brands" onclick="openFindBrands()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Find Brands
+    </button>
+  </div>
+
+  <!-- Profile Completeness -->
+  <div class="profile-bar-card reveal reveal--d1">
+    <div class="profile-bar-top">
+      <span>Profile Completeness</span>
+      <span class="profile-pct">85%</span>
+    </div>
+    <div class="profile-bar-track"><div class="profile-bar-fill" style="width:0%" data-width="85%"></div></div>
+    <p class="profile-bar-hint">Complete your profile to get more collaboration opportunities</p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card reveal">
+      <div class="stat-card__body">
+        <span class="stat-label">Pending Requests</span>
+        <span class="stat-num" data-target="2">0</span>
+      </div>
+      <div class="stat-card__icon stat-card__icon--yellow">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+    </div>
+    <div class="stat-card reveal reveal--d1">
+      <div class="stat-card__body">
+        <span class="stat-label">Active Collabs</span>
+        <span class="stat-num" data-target="2">0</span>
+      </div>
+      <div class="stat-card__icon stat-card__icon--green">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      </div>
+    </div>
+    <div class="stat-card reveal reveal--d2">
+      <div class="stat-card__body">
+        <span class="stat-label">Total Earnings</span>
+        <span class="stat-num">$<span data-target="12">0</span>.<span>4K</span></span>
+      </div>
+      <div class="stat-card__icon stat-card__icon--blue">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+    </div>
+    <div class="stat-card reveal reveal--d3">
+      <div class="stat-card__body">
+        <span class="stat-label">Profile Views</span>
+        <span class="stat-num" data-target="1247">0</span>
+      </div>
+      <div class="stat-card__icon stat-card__icon--pink">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two column layout -->
+  <div class="two-col">
+
+    <!-- LEFT COLUMN -->
+    <div class="col-left">
+
+      <!-- Collaboration Requests -->
+      <div class="section-card reveal">
+        <div class="section-card__header">
+          <h2 class="section-title">Collaboration Requests</h2>
+          <span class="badge-count" id="requestCount">2 pending</span>
+        </div>
+        <div id="requestsList">
+
+          <div class="request-item" id="req-0">
+            <div class="request-item__top">
+              <div class="brand-logo brand-logo--blue">VW</div>
+              <div class="request-info">
+                <h3>Spring Product Launch Campaign</h3>
+                <span class="brand-name">TechFlow</span>
+                <p class="request-desc">Looking for creators to promote our new smart home device lineup targeting tech enthusiasts.</p>
+                <div class="request-meta">
+                  <span class="meta-pill meta-pill--green">💰 $2,500</span>
+                  <span class="meta-pill">🕐 Due: Mar 15, 2026</span>
+                </div>
+              </div>
+              <span class="status-badge status-badge--pending">Pending</span>
+            </div>
+            <div class="request-actions">
+              <button class="btn-accept" onclick="handleRequest(0, 'accept')">✓ Accept</button>
+              <button class="btn-decline" onclick="handleRequest(0, 'decline')">✕ Decline</button>
+              <button class="btn-details-sm" onclick="openRequestDetail(0)">View Details →</button>
+            </div>
+          </div>
+
+          <div class="request-item" id="req-1">
+            <div class="request-item__top">
+              <div class="brand-logo brand-logo--teal">FA</div>
+              <div class="request-info">
+                <h3>Fitness App Awareness</h3>
+                <span class="brand-name">GrowthLabs</span>
+                <p class="request-desc">Seeking fitness creators for authentic app reviews and workout content featuring our platform.</p>
+                <div class="request-meta">
+                  <span class="meta-pill meta-pill--green">💰 $1,800</span>
+                  <span class="meta-pill">🕐 Due: Mar 20, 2026</span>
+                </div>
+              </div>
+              <span class="status-badge status-badge--pending">Pending</span>
+            </div>
+            <div class="request-actions">
+              <button class="btn-accept" onclick="handleRequest(1, 'accept')">✓ Accept</button>
+              <button class="btn-decline" onclick="handleRequest(1, 'decline')">✕ Decline</button>
+              <button class="btn-details-sm" onclick="openRequestDetail(1)">View Details →</button>
+            </div>
+          </div>
+
+          <div class="request-item request-item--accepted" id="req-2">
+            <div class="request-item__top">
+              <div class="brand-logo brand-logo--orange">SF</div>
+              <div class="request-info">
+                <h3>Sustainable Fashion Showcase</h3>
+                <span class="brand-name">EcoStyle</span>
+                <p class="request-desc">Partner with us to showcase our eco-friendly clothing line to conscious consumers.</p>
+                <div class="request-meta">
+                  <span class="meta-pill meta-pill--green">💰 $3,200</span>
+                  <span class="meta-pill">🕐 Due: Mar 25, 2026</span>
+                </div>
+              </div>
+              <span class="status-badge status-badge--accepted">Accepted</span>
+            </div>
+            <div class="request-actions">
+              <button class="btn-details-sm" onclick="openRequestDetail(2)">View Details →</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Active Collaborations -->
+      <div class="section-card reveal reveal--d1">
+        <div class="section-card__header">
+          <h2 class="section-title">Active Collaborations</h2>
+          <span class="badge-count">2 active</span>
+        </div>
+
+        <div class="collab-item">
+          <div class="collab-item__header">
+            <div>
+              <h3 class="collab-name">Sustainable Fashion Showcase</h3>
+              <span class="collab-brand">EcoStyle</span>
+            </div>
+            <span class="collab-status collab-status--active">Active</span>
+          </div>
+          <div class="collab-progress">
+            <div class="progress-row"><span>Progress</span><span>65%</span></div>
+            <div class="progress-track"><div class="progress-fill" data-width="65%"></div></div>
+          </div>
+          <div class="collab-payment">
+            <span>Payment:</span>
+            <span class="payment-green">Milestone 1 Paid ✓</span>
+          </div>
+          <button class="btn-view-details" onclick="openCollabDetail(0)">View Details →</button>
+        </div>
+
+        <div class="collab-divider"></div>
+
+        <div class="collab-item">
+          <div class="collab-item__header">
+            <div>
+              <h3 class="collab-name">Winter Wellness Series</h3>
+              <span class="collab-brand">HealthHub</span>
+            </div>
+            <span class="collab-status collab-status--active">Active</span>
+          </div>
+          <div class="collab-progress">
+            <div class="progress-row"><span>Progress</span><span>30%</span></div>
+            <div class="progress-track"><div class="progress-fill" data-width="30%"></div></div>
+          </div>
+          <div class="collab-payment">
+            <span>Payment:</span>
+            <span class="payment-pending">Pending</span>
+          </div>
+          <button class="btn-view-details" onclick="openCollabDetail(1)">View Details →</button>
+        </div>
+      </div>
+
+    </div><!-- /col-left -->
+
+    <!-- RIGHT COLUMN -->
+    <div class="col-right">
+
+      <!-- Earnings Overview -->
+      <div class="section-card reveal">
+        <div class="section-card__header">
+          <h2 class="section-title">Earnings Overview</h2>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+        </div>
+        <div class="earnings-month">
+          <div>
+            <div class="earnings-label">This Month</div>
+            <div class="earnings-amount">$4,850</div>
+            <div class="earnings-growth">📈 +24% from last month</div>
+          </div>
+        </div>
+        <div class="earnings-bars">
+          <div class="earnings-bar-row"><span>Week 1</span><div class="ebar-track"><div class="ebar-fill" data-width="80%"></div></div><span>$1,200</span></div>
+          <div class="earnings-bar-row"><span>Week 2</span><div class="ebar-track"><div class="ebar-fill" data-width="63%"></div></div><span>$950</span></div>
+          <div class="earnings-bar-row"><span>Week 3</span><div class="ebar-track"><div class="ebar-fill" data-width="100%"></div></div><span>$1,500</span></div>
+          <div class="earnings-bar-row"><span>Week 4</span><div class="ebar-track"><div class="ebar-fill" data-width="80%"></div></div><span>$1,200</span></div>
+        </div>
+        <button class="btn-full-report" onclick="openEarningsReport()">View Full Report</button>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="section-card reveal reveal--d1">
+        <div class="section-card__header">
+          <h2 class="section-title">Performance</h2>
+        </div>
+        <div class="perf-grid">
+          <div class="perf-item"><div class="perf-val">4.9★</div><div class="perf-label">Avg. Rating</div></div>
+          <div class="perf-item"><div class="perf-val">98%</div><div class="perf-label">Response Rate</div></div>
+          <div class="perf-item"><div class="perf-val">12</div><div class="perf-label">Completed</div></div>
+          <div class="perf-item"><div class="perf-val">2d</div><div class="perf-label">Avg. Response</div></div>
+        </div>
+      </div>
+
+      <!-- Send Request to Brands -->
+      <div class="section-card reveal reveal--d2">
+        <div class="section-card__header">
+          <h2 class="section-title">Pitch to Brands</h2>
+          <span class="new-badge">NEW</span>
+        </div>
+        <p class="pitch-desc">Don't wait — reach out directly to brands you'd love to work with.</p>
+        <div class="brand-suggestions">
+          <div class="brand-suggest-item" onclick="openPitchModal('Nike')">
+            <div class="bs-logo" style="background:linear-gradient(135deg,#000,#333)">NK</div>
+            <div><div class="bs-name">Nike</div><div class="bs-niche">Sports & Fitness</div></div>
+            <button class="bs-pitch-btn">Pitch →</button>
+          </div>
+          <div class="brand-suggest-item" onclick="openPitchModal('Samsung')">
+            <div class="bs-logo" style="background:linear-gradient(135deg,#1428a0,#4cc9f0)">SM</div>
+            <div><div class="bs-name">Samsung</div><div class="bs-niche">Technology</div></div>
+            <button class="bs-pitch-btn">Pitch →</button>
+          </div>
+          <div class="brand-suggest-item" onclick="openPitchModal('Zara')">
+            <div class="bs-logo" style="background:linear-gradient(135deg,#222,#555)">ZR</div>
+            <div><div class="bs-name">Zara</div><div class="bs-niche">Fashion</div></div>
+            <button class="bs-pitch-btn">Pitch →</button>
+          </div>
+        </div>
+        <button class="btn-find-brands-full" onclick="openFindBrands()">Browse All Brands →</button>
+      </div>
+
+    </div><!-- /col-right -->
+  </div><!-- /two-col -->
+
+</main>
+
+<!--MODALS-->
+
+<!-- Request Detail Modal -->
+<div class="modal-overlay hidden" id="requestDetailModal" onclick="closeMod('requestDetailModal',event)">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('requestDetailModal').classList.add('hidden')">✕</button>
+    <div id="requestDetailContent"></div>
+  </div>
+</div>
+
+<!-- Collab Detail Modal -->
+<div class="modal-overlay hidden" id="collabDetailModal" onclick="closeMod('collabDetailModal',event)">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('collabDetailModal').classList.add('hidden')">✕</button>
+    <div id="collabDetailContent"></div>
+  </div>
+</div>
+
+<!-- Earnings Report Modal -->
+<div class="modal-overlay hidden" id="earningsModal" onclick="closeMod('earningsModal',event)">
+  <div class="modal modal--wide">
+    <button class="modal-close" onclick="document.getElementById('earningsModal').classList.add('hidden')">✕</button>
+    <div id="earningsContent"></div>
+  </div>
+</div>
+
+<!-- Pitch Modal -->
+<div class="modal-overlay hidden" id="pitchModal" onclick="closeMod('pitchModal',event)">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('pitchModal').classList.add('hidden')">✕</button>
+    <div id="pitchContent"></div>
+  </div>
+</div>
+
+<!-- Find Brands Modal -->
+<div class="modal-overlay hidden" id="findBrandsModal" onclick="closeMod('findBrandsModal',event)">
+  <div class="modal modal--wide">
+    <button class="modal-close" onclick="document.getElementById('findBrandsModal').classList.add('hidden')">✕</button>
+    <div id="findBrandsContent"></div>
+  </div>
+</div>
+
+<!-- Success Toast -->
+<div class="toast hidden" id="toast">
+  <span id="toastMsg"></span>
+</div>
+
+<script src="creator.js"></script>
+</body>
+</html>

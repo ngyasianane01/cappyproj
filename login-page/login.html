@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CollabBridge — Login</title>
+  <link rel="stylesheet" href="login.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- Back Button -->
+  <a href="../role-select/role.html" class="back-btn">← Back</a>
+
+  <!-- Background -->
+  <div class="bg">
+    <div class="bg__orb bg__orb--1"></div>
+    <div class="bg__orb bg__orb--2"></div>
+    <div class="bg__orb bg__orb--3"></div>
+  </div>
+
+  <div class="page-wrap">
+
+    <!-- Logo -->
+    <div class="logo animate-in">
+      <div class="logo__icon">
+        <div class="logo__inner"></div>
+      </div>
+      <span class="logo__text">CollabBridge</span>
+    </div>
+
+    <!-- Dynamic subtitle -->
+    <p class="subtitle animate-in animate-in--d1" id="subtitle">Continue</p>
+
+    <!-- Auth Card -->
+    <div class="card animate-in animate-in--d2">
+
+      <!--Tab Toggle-->
+      <div class="tab-bar">
+        <button class="tab tab--active" id="tabLogin" onclick="switchTab('login')">Login</button>
+        <button class="tab" id="tabCreate" onclick="switchTab('create')">Create Account</button>
+      </div>
+
+      <!--LOGIN FORM-->
+      <div class="form-panel" id="panelLogin">
+        <div class="field">
+          <label class="field__label">Email</label>
+          <input type="email" class="field__input" placeholder="you@example.com" id="loginEmail"/>
+        </div>
+        <div class="field">
+          <label class="field__label">Password</label>
+          <div class="field__input-wrap">
+            <input type="password" class="field__input" placeholder="••••••••" id="loginPassword"/>
+            <button class="field__eye" onclick="togglePw('loginPassword', this)" aria-label="Show password">
+              <svg id="eyeIconLogin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="forgot-row">
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+        <button class="submit-btn" onclick="handleLogin()">
+          <span class="submit-btn__text">Login</span>
+          <span class="submit-btn__spinner" id="loginSpinner"></span>
+        </button>
+        <div class="error-msg" id="loginError"></div>
+      </div>
+
+      <!--CREATE ACCOUNT FORM-->
+      <div class="form-panel hidden" id="panelCreate">
+        <div class="field">
+          <label class="field__label">Email</label>
+          <input type="email" class="field__input" placeholder="you@example.com" id="createEmail"/>
+        </div>
+        <div class="field">
+          <label class="field__label">Password</label>
+          <div class="field__input-wrap">
+            <input type="password" class="field__input" placeholder="••••••••" id="createPassword"/>
+            <button class="field__eye" onclick="togglePw('createPassword', this)" aria-label="Show password">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="password-strength" id="pwStrength">
+          <div class="strength-bar">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+          <span class="strength-label" id="strengthLabel"></span>
+        </div>
+        <button class="submit-btn" onclick="handleCreate()">
+          <span class="submit-btn__text">Create Account</span>
+          <span class="submit-btn__spinner" id="createSpinner"></span>
+        </button>
+        <div class="error-msg" id="createError"></div>
+      </div>
+
+      <a href="../role-select/role.html" class="back-link">← Back to user type selection</a>
+    </div>
+
+    <p class="legal animate-in animate-in--d3">
+      By continuing, you agree to our
+      <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
+    </p>
+
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

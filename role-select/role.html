@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CollabBridge — Choose Your Role</title>
+  <link rel="stylesheet" href="role.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- Back Button -->
+  <a href="../landing-page/index.html" class="back-btn">← Back to Home</a>
+
+  <!-- Background orbs -->
+  <div class="bg">
+    <div class="bg__orb bg__orb--1"></div>
+    <div class="bg__orb bg__orb--2"></div>
+    <div class="bg__orb bg__orb--3"></div>
+  </div>
+
+  <div class="page-wrap">
+
+    <!-- Logo -->
+    <div class="logo animate-in">
+      <div class="logo__icon">
+        <div class="logo__inner"></div>
+      </div>
+      <span class="logo__text">CollabBridge</span>
+    </div>
+
+    <p class="tagline animate-in animate-in--d1">Join the platform connecting creators and brands</p>
+
+    <!-- Role Card -->
+    <div class="card animate-in animate-in--d2">
+      <h2 class="card__title">I am a...</h2>
+
+      <button class="role-btn" id="btnBrand" onclick="selectRole('brand')">
+        <div class="role-btn__icon role-btn__icon--brand">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+            <rect x="6" y="7" width="4" height="5" rx="1"/><rect x="14" y="7" width="4" height="3" rx="1"/>
+          </svg>
+        </div>
+        <div class="role-btn__text">
+          <span class="role-btn__name">Brand</span>
+          <span class="role-btn__desc">Looking to collaborate with creators</span>
+        </div>
+        <div class="role-btn__arrow">→</div>
+      </button>
+
+      <button class="role-btn" id="btnCreator" onclick="selectRole('creator')">
+        <div class="role-btn__icon role-btn__icon--creator">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z"/>
+          </svg>
+        </div>
+        <div class="role-btn__text">
+          <span class="role-btn__name">Creator</span>
+          <span class="role-btn__desc">Ready to partner with brands</span>
+        </div>
+        <div class="role-btn__arrow">→</div>
+      </button>
+    </div>
+
+    <p class="legal animate-in animate-in--d3">
+      By continuing, you agree to our
+      <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
+    </p>
+
+  </div>
+
+  <script src="role.js"></script>
+</body>
+</html>

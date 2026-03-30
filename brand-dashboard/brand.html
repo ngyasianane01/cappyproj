@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CollabBridge — Brand Dashboard</title>
+  <link rel="stylesheet" href="brand.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav__left">
+    <a href="../landing-page/index.html" class="nav__logo">
+      <div class="logo-icon"><div class="logo-inner"></div></div>
+      <span>CollabBridge</span>
+    </a>
+    <div class="nav__search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search creators..." id="searchInput" oninput="handleSearch()"/>
+    </div>
+  </div>
+  <div class="nav__right">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
+      <span id="themeIcon">🌙</span>
+    </button>
+    <button class="notif-btn" id="notifBtn" onclick="toggleNotifications()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notif-badge" id="notifBadge">0</span>
+    </button>
+    <div class="user-pill">
+      <div class="user-avatar">B</div>
+      <span>Brand Account</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+</nav>
+
+<div class="notif-panel hidden" id="notifPanel">
+  <div class="notif-panel__header">
+    <span>Notifications</span>
+    <button onclick="clearNotifications()" class="notif-clear">Clear all</button>
+  </div>
+  <div class="notif-list" id="notifList"><div class="notif-empty">No notifications yet</div></div>
+</div>
+
+<main class="main">
+
+  <div class="stats-grid">
+    <div class="stat-card reveal">
+      <div class="stat-card__body"><span class="stat-label">Active Campaigns</span><span class="stat-num" data-target="12">0</span></div>
+      <div class="stat-card__icon stat-card__icon--green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+    </div>
+    <div class="stat-card reveal reveal--d1">
+      <div class="stat-card__body"><span class="stat-label">Requests Sent</span><span class="stat-num" id="requestsSentNum" data-target="48">0</span></div>
+      <div class="stat-card__icon stat-card__icon--yellow"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+    </div>
+    <div class="stat-card reveal reveal--d2">
+      <div class="stat-card__body"><span class="stat-label">Budget Used</span><span class="stat-num">$<span data-target="24">0</span>K</span></div>
+      <div class="stat-card__icon stat-card__icon--blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+    </div>
+    <div class="stat-card reveal reveal--d3">
+      <div class="stat-card__body"><span class="stat-label">Shortlisted</span><span class="stat-num" id="shortlistedNum" data-target="23">0</span></div>
+      <div class="stat-card__icon stat-card__icon--pink"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    </div>
+  </div>
+
+  <div class="discover-header reveal reveal--d2">
+    <div class="discover-header__left">
+      <h2 class="discover-title">Discover Creators</h2>
+      <span class="creator-count" id="creatorCount"></span>
+    </div>
+    <div class="discover-header__right">
+      <div class="filter-chips">
+        <button class="chip chip--active" onclick="filterByNiche('all',this)">All</button>
+        <button class="chip" onclick="filterByNiche('fashion',this)">Fashion</button>
+        <button class="chip" onclick="filterByNiche('tech',this)">Tech</button>
+        <button class="chip" onclick="filterByNiche('lifestyle',this)">Lifestyle</button>
+        <button class="chip" onclick="filterByNiche('fitness',this)">Fitness</button>
+        <button class="chip" onclick="filterByNiche('food',this)">Food</button>
+        <button class="chip" onclick="filterByNiche('travel',this)">Travel</button>
+        <button class="chip" onclick="filterByNiche('music',this)">Music</button>
+        <button class="chip" onclick="filterByNiche('finance',this)">Finance</button>
+      </div>
+      <button class="filter-btn" id="sortBtn" onclick="cycleSort()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        <span id="sortLabel">Sort</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="creators-grid" id="creatorsGrid"></div>
+  <div class="pagination" id="pagination"></div>
+  <div id="extraSections"></div>
+
+</main>
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay hidden" id="profileModal" onclick="closeProfileOnBg(event)">
+  <div class="modal profile-modal">
+    <button class="modal-close" onclick="closeProfile()">✕</button>
+    <div class="profile-modal__hero">
+      <div class="profile-modal__avatar" id="pmAvatar"></div>
+      <div class="profile-modal__info"><h2 id="pmName"></h2><span id="pmNiche" class="pm-niche"></span><div class="pm-platform" id="pmPlatform"></div></div>
+      <button class="btn-request pm-request-btn" id="pmRequestBtn">Send Request</button>
+    </div>
+    <div class="profile-modal__stats" id="pmStats"></div>
+    <div class="profile-modal__section"><h4>About</h4><p id="pmBio"></p></div>
+    <div class="profile-modal__section"><h4>Content Tags</h4><div class="creator-tags" id="pmTags"></div></div>
+    <div class="profile-modal__section"><h4>Past Collaborations</h4><div class="collab-list" id="pmCollabs"></div></div>
+    <div class="profile-modal__section"><h4>Audience Demographics</h4><div class="demo-bars" id="pmDemo"></div></div>
+  </div>
+</div>
+
+<!-- REQUEST MODAL -->
+<div class="modal-overlay hidden" id="requestModal" onclick="closeRequestOnBg(event)">
+  <div class="modal request-modal">
+    <button class="modal-close" onclick="closeRequest()">✕</button>
+    <div class="request-modal__header">
+      <div class="request-modal__avatar" id="rmAvatar"></div>
+      <div><h3>Collaboration Request</h3><p id="rmSubtitle"></p></div>
+    </div>
+    <div class="request-form">
+      <div class="field"><label class="field__label">Your Company Name</label><input type="text" class="field__input" id="rmCompany" placeholder="Enter your company name"/></div>
+      <div class="field"><label class="field__label">Campaign Budget</label><div class="select-wrap"><select class="field__input" id="rmBudget"><option value="" disabled selected>Select budget range</option><option>Under $1,000</option><option>$1,000 – $5,000</option><option>$5,000 – $20,000</option><option>$20,000 – $50,000</option><option>$50,000+</option></select><span class="select-arrow">▾</span></div></div>
+      <div class="field"><label class="field__label">Campaign Duration</label><div class="select-wrap"><select class="field__input" id="rmDuration"><option value="" disabled selected>Select duration</option><option>1 Week</option><option>2 Weeks</option><option>1 Month</option><option>3 Months</option><option>6 Months</option><option>Ongoing</option></select><span class="select-arrow">▾</span></div></div>
+      <div class="field"><label class="field__label">Message to Creator</label><textarea class="field__input field__textarea" id="rmMessage" rows="4" placeholder="Tell the creator about your campaign goals, what you need from them, and why you'd be a great fit..."></textarea></div>
+      <div class="request-form__error" id="rmError"></div>
+      <div class="request-form__actions">
+        <button class="btn-cancel" onclick="closeRequest()">Cancel</button>
+        <button class="btn-send" id="rmSendBtn" onclick="sendRequest()"><span class="btn-send__text">Send Request</span><span class="btn-send__spinner"></span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay hidden" id="successOverlay">
+  <div class="success-box">
+    <div class="success-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <h3 class="success-title">Request Sent! 🎉</h3>
+    <p class="success-msg" id="successMsg"></p>
+    <div class="success-details" id="successDetails"></div>
+    <button class="success-close" onclick="closeSuccess()">Back to Dashboard</button>
+  </div>
+</div>
+
+<script src="brand.js"></script>
+</body>
+</html>

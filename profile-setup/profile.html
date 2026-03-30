@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CollabBridge — Profile Setup</title>
+  <link rel="stylesheet" href="profile.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- Back Button -->
+  <a href="../login-page/login.html" class="back-btn">← Back</a>
+
+  <div class="bg">
+    <div class="bg__orb bg__orb--1"></div>
+    <div class="bg__orb bg__orb--2"></div>
+  </div>
+
+  <div class="page-wrap">
+
+    <!-- Tab Toggle (top) -->
+    <div class="role-toggle animate-in">
+      <button class="rtab" id="rtabCreator" onclick="switchRole('creator')">Creator</button>
+      <button class="rtab" id="rtabBrand" onclick="switchRole('brand')">Brand</button>
+    </div>
+
+    <!--CREATOR FORM-->
+    <div class="card animate-in animate-in--d1" id="creatorCard">
+      <h2 class="card__title">Creator Profile</h2>
+      <p class="card__sub">Tell us about yourself and showcase your work</p>
+
+      <!-- Image Upload -->
+      <div class="upload-row">
+        <div class="upload-label">Profile Image</div>
+        <div class="upload-area" id="creatorUploadArea" onclick="document.getElementById('creatorImgInput').click()">
+          <div class="upload-preview" id="creatorPreview">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b93c0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+            </svg>
+          </div>
+          <input type="file" id="creatorImgInput" accept="image/*" style="display:none" onchange="previewImage('creatorImgInput','creatorPreview')"/>
+        </div>
+        <button class="upload-btn" onclick="document.getElementById('creatorImgInput').click()">Upload Image</button>
+      </div>
+
+      <!-- Fields Grid -->
+      <div class="fields-grid">
+        <div class="field">
+          <label class="field__label">Full Name</label>
+          <input type="text" class="field__input" placeholder="Enter your name" id="creatorName"/>
+        </div>
+        <div class="field">
+          <label class="field__label">Niche</label>
+          <input type="text" class="field__input" placeholder="e.g. Fashion, Tech, Food" id="creatorNiche"/>
+        </div>
+        <div class="field">
+          <label class="field__label">Primary Platform</label>
+          <div class="select-wrap">
+            <select class="field__input field__select" id="creatorPlatform">
+              <option value="" disabled selected></option>
+              <option>Instagram</option>
+              <option>YouTube</option>
+              <option>TikTok</option>
+              <option>Twitter / X</option>
+              <option>LinkedIn</option>
+              <option>Pinterest</option>
+              <option>Twitch</option>
+              <option>Other</option>
+            </select>
+            <span class="select-arrow">▾</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label">Followers Count</label>
+          <input type="number" class="field__input" placeholder="e.g. 50000" id="creatorFollowers"/>
+        </div>
+      </div>
+
+      <div class="field field--full">
+        <label class="field__label">Bio</label>
+        <textarea class="field__input field__textarea" placeholder="Tell brands about yourself and your content..." id="creatorBio" rows="3"></textarea>
+      </div>
+
+      <div class="field field--full">
+        <label class="field__label">Portfolio Link</label>
+        <input type="url" class="field__input" placeholder="https://yourportfolio.com" id="creatorPortfolio"/>
+      </div>
+
+      <div class="field field--full">
+        <label class="field__label">Social Media Links</label>
+        <textarea class="field__input field__textarea" placeholder="Add your social media profile links (one per line)" id="creatorSocials" rows="3"></textarea>
+      </div>
+
+      <div class="error-msg" id="creatorError"></div>
+
+      <button class="submit-btn" onclick="handleSave('creator')">
+        <span class="submit-btn__text">Save &amp; Continue</span>
+        <span class="submit-btn__spinner"></span>
+      </button>
+    </div>
+
+    <!--BRAND FORM-->
+    <div class="card animate-in animate-in--d1 hidden" id="brandCard">
+      <h2 class="card__title">Brand Profile</h2>
+      <p class="card__sub">Set up your company profile to find the right creators</p>
+
+      <!-- Logo Upload -->
+      <div class="upload-row">
+        <div class="upload-label">Company Logo</div>
+        <div class="upload-area" id="brandUploadArea" onclick="document.getElementById('brandLogoInput').click()">
+          <div class="upload-preview" id="brandPreview">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b93c0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+            </svg>
+          </div>
+          <input type="file" id="brandLogoInput" accept="image/*" style="display:none" onchange="previewImage('brandLogoInput','brandPreview')"/>
+        </div>
+        <button class="upload-btn" onclick="document.getElementById('brandLogoInput').click()">Upload Logo</button>
+      </div>
+
+      <!-- Fields Grid -->
+      <div class="fields-grid">
+        <div class="field">
+          <label class="field__label">Company Name</label>
+          <input type="text" class="field__input" placeholder="Enter company name" id="brandName"/>
+        </div>
+        <div class="field">
+          <label class="field__label">Industry</label>
+          <div class="select-wrap">
+            <select class="field__input field__select" id="brandIndustry">
+              <option value="" disabled selected></option>
+              <option>Technology</option>
+              <option>Fashion &amp; Beauty</option>
+              <option>Food &amp; Beverage</option>
+              <option>Health &amp; Wellness</option>
+              <option>Finance</option>
+              <option>Travel</option>
+              <option>Entertainment</option>
+              <option>Education</option>
+              <option>E-commerce</option>
+              <option>Other</option>
+            </select>
+            <span class="select-arrow">▾</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label">Website</label>
+          <input type="url" class="field__input" placeholder="https://yourcompany.com" id="brandWebsite"/>
+        </div>
+        <div class="field">
+          <label class="field__label">Budget Range</label>
+          <div class="select-wrap">
+            <select class="field__input field__select" id="brandBudget">
+              <option value="" disabled selected></option>
+              <option>Under $1,000</option>
+              <option>$1,000 – $5,000</option>
+              <option>$5,000 – $20,000</option>
+              <option>$20,000 – $50,000</option>
+              <option>$50,000+</option>
+            </select>
+            <span class="select-arrow">▾</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field field--full">
+        <label class="field__label">Company Description</label>
+        <textarea class="field__input field__textarea" placeholder="Describe your company and what you're looking for in a creator partnership..." id="brandDesc" rows="4"></textarea>
+      </div>
+
+      <div class="error-msg" id="brandError"></div>
+
+      <button class="submit-btn" onclick="handleSave('brand')">
+        <span class="submit-btn__text">Save &amp; Continue</span>
+        <span class="submit-btn__spinner"></span>
+      </button>
+    </div>
+
+    <p class="footer-note animate-in animate-in--d2">You can update your profile anytime from settings</p>
+
+  </div>
+
+  <script src="profile.js"></script>
+</body>
+</html>
