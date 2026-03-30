@@ -68,7 +68,7 @@ window.addEventListener("load", () => {
   }, 400);
 });
 
-//NOTIFICATIONS 
+//NOTIFICATIONS
 let notifications = [
   {
     msg: "<strong>TechFlow</strong> sent you a collaboration request",
@@ -129,7 +129,7 @@ document.addEventListener("click", (e) => {
     msgPanel.classList.add("hidden");
 });
 
-//REQUEST DATA 
+//REQUEST DATA
 const requests = [
   {
     id: 0,
@@ -561,7 +561,7 @@ function showToast(msg) {
   }, 3000);
 }
 
-//KEYBOARD ESC 
+//KEYBOARD ESC
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     [
