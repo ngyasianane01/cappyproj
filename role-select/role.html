@@ -2,17 +2,235 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CollabBridge — Choose Your Role</title>
-  <link rel="stylesheet" href="role.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border: 0; }
+
+    /* ── TOKENS ── */
+    :root {
+      --bg:     #07091a;
+      --navy:   #1c2660;
+      --card:   #f0f1f8;
+      --inner:  #ffffff;
+      --accent: #c9a84c;
+      --gold:   #f5c518;
+      --muted:  #8b93c0;
+      --dark:   #1a1f4e;
+      --r:      22px;
+      --r-sm:   14px;
+    }
+
+    /* ── HTML / BODY ──
+       body is a plain block — NO flex, NO overflow:hidden.
+       Centering is done entirely by margin:auto on .page-wrap.
+    ── */
+    html {
+      height: 100%;
+      overflow-x: hidden;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    a { text-decoration: none; }
+
+    /* ── BACKGROUND ──
+       overflow:hidden is on .bg (fixed), NOT on body.
+       This clips the blurred orbs without affecting layout.
+    ── */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 30% 20%, #1c2660 0%, #0d1130 40%, #07091a 100%);
+    }
+    .bg__orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.5;
+      animation: floatOrb 9s ease-in-out infinite;
+    }
+    .bg__orb--1 { width:500px;height:500px;background:#1c2660;top:-150px;left:-100px; }
+    .bg__orb--2 { width:350px;height:350px;background:rgba(201,168,76,.15);bottom:-80px;right:-80px;animation-duration:12s;animation-direction:reverse; }
+    .bg__orb--3 { width:250px;height:250px;background:rgba(100,120,220,.2);top:50%;right:20%;animation-duration:7s; }
+    @keyframes floatOrb {
+      0%,100% { transform:translate(0,0); }
+      50%      { transform:translate(20px,30px); }
+    }
+
+    /* ── BACK BUTTON ── */
+    .back-btn {
+      position: fixed;
+      top: 16px; left: 16px;
+      z-index: 100;
+      color: var(--muted);
+      font-size: .9rem;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.05);
+      backdrop-filter: blur(6px);
+      transition: color .2s, background .2s;
+    }
+    .back-btn:hover { color: #fff; background: rgba(255,255,255,.1); }
+
+    /* ── PAGE WRAP ──
+       THE FIX: display:block + margin:0 auto.
+       This centers the column on every browser and every phone.
+    ── */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;               /* auto margins = centered */
+      padding: 72px 20px 48px;
+      text-align: center;
+    }
+
+    /* ── ANIMATIONS ── */
+    .animate-in { opacity:0; transform:translateY(22px); animation:fadeUp .65s cubic-bezier(.22,1,.36,1) forwards; }
+    .animate-in--d1 { animation-delay:.10s; }
+    .animate-in--d2 { animation-delay:.20s; }
+    .animate-in--d3 { animation-delay:.35s; }
+    @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+    /* ── LOGO ── */
+    .logo { display:inline-flex; align-items:center; gap:14px; margin-bottom:14px; }
+    .logo__icon {
+      width:52px; height:52px;
+      background: var(--accent);
+      border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 6px 24px rgba(201,168,76,.35);
+      flex-shrink:0;
+    }
+    .logo__inner {
+      width:28px; height:28px;
+      border-radius:7px;
+      outline:3px solid #0d1130;
+      background:transparent;
+    }
+    .logo__text {
+      font-family:'Sora',sans-serif;
+      font-weight:800;
+      font-size: clamp(1.4rem, 4vw, 1.9rem);
+      color:#fff;
+      letter-spacing:-.01em;
+    }
+
+    /* ── TAGLINE ── */
+    .tagline { color:var(--muted); font-size:1rem; text-align:center; margin-bottom:32px; }
+
+    /* ── CARD ── */
+    .card {
+      width:100%;
+      background:var(--card);
+      border-radius:var(--r);
+      padding:36px 32px;
+      box-shadow:0 30px 80px rgba(0,0,0,.5);
+      margin-bottom:26px;
+      text-align:left;
+    }
+    .card__title {
+      font-family:'Sora',sans-serif;
+      font-size:1.55rem;
+      font-weight:700;
+      color:var(--dark);
+      text-align:center;
+      margin-bottom:26px;
+    }
+
+    /* ── ROLE BUTTONS ── */
+    .role-btn {
+      display:flex;
+      align-items:center;
+      gap:18px;
+      width:100%;
+      background:var(--inner);
+      border:1.5px solid transparent;
+      border-radius:var(--r-sm);
+      padding:20px 22px;
+      cursor:pointer;
+      transition:all .3s cubic-bezier(.22,1,.36,1);
+      position:relative;
+      overflow:hidden;
+      margin-bottom:14px;
+      text-align:left;
+    }
+    .role-btn:last-child { margin-bottom:0; }
+    .role-btn::before {
+      content:'';
+      position:absolute; inset:0;
+      background:linear-gradient(135deg,rgba(28,38,96,.06),rgba(201,168,76,.06));
+      opacity:0; transition:opacity .3s;
+    }
+    .role-btn:hover { border-color:rgba(28,38,96,.3); transform:translateX(4px); box-shadow:0 8px 30px rgba(0,0,0,.12); }
+    .role-btn:hover::before { opacity:1; }
+    .role-btn:active { transform:translateX(4px) scale(.99); }
+    .role-btn.selected {
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(201,168,76,.2),0 8px 30px rgba(0,0,0,.15);
+      transform:translateX(4px);
+    }
+
+    .role-btn__icon {
+      width:58px; height:58px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#1c2660,#2d3b8e);
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0;
+    }
+    .role-btn__text { flex:1; display:flex; flex-direction:column; gap:4px; }
+    .role-btn__name { font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--dark); }
+    .role-btn__desc { font-size:.9rem; color:#7b82aa; }
+    .role-btn__arrow { font-size:1.2rem; color:var(--muted); opacity:0; transition:transform .25s,color .25s,opacity .25s; }
+    .role-btn:hover .role-btn__arrow { opacity:1; transform:translateX(4px); color:var(--accent); }
+
+    /* ── LEGAL ── */
+    .legal { color:var(--muted); font-size:.88rem; text-align:center; line-height:1.6; }
+    .legal a { color:var(--gold); font-weight:500; }
+    .legal a:hover { text-decoration:underline; }
+
+    /* ── TRANSITION OVERLAY ── */
+    .page-transition {
+      position:fixed; inset:0;
+      background:var(--bg);
+      z-index:999;
+      opacity:0; pointer-events:none;
+      transition:opacity .4s ease;
+    }
+    .page-transition.active { opacity:1; pointer-events:all; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 500px) {
+      .page-wrap { padding: 68px 14px 40px; }
+      .card      { padding: 24px 16px; }
+      .role-btn  { padding: 16px 14px; gap: 14px; }
+      .role-btn__icon { width:48px; height:48px; border-radius:12px; }
+      .card__title { font-size:1.3rem; }
+    }
+    @media (max-width: 360px) {
+      .page-wrap  { padding: 60px 10px 32px; }
+      .card       { padding: 20px 12px; border-radius:16px; }
+      .role-btn   { padding: 14px 12px; gap: 12px; }
+      .logo__text { font-size: 1.3rem; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Back Button -->
   <a href="../landing-page/index.html" class="back-btn">← Back to Home</a>
 
-  <!-- Background orbs -->
   <div class="bg">
     <div class="bg__orb bg__orb--1"></div>
     <div class="bg__orb bg__orb--2"></div>
@@ -21,25 +239,24 @@
 
   <div class="page-wrap">
 
-    <!-- Logo -->
     <div class="logo animate-in">
-      <div class="logo__icon">
-        <div class="logo__inner"></div>
-      </div>
+      <div class="logo__icon"><div class="logo__inner"></div></div>
       <span class="logo__text">CollabBridge</span>
     </div>
 
     <p class="tagline animate-in animate-in--d1">Join the platform connecting creators and brands</p>
 
-    <!-- Role Card -->
     <div class="card animate-in animate-in--d2">
       <h2 class="card__title">I am a...</h2>
 
       <button class="role-btn" id="btnBrand" onclick="selectRole('brand')">
-        <div class="role-btn__icon role-btn__icon--brand">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-            <rect x="6" y="7" width="4" height="5" rx="1"/><rect x="14" y="7" width="4" height="3" rx="1"/>
+        <div class="role-btn__icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+            <rect x="6" y="7" width="4" height="5" rx="1"/>
+            <rect x="14" y="7" width="4" height="3" rx="1"/>
           </svg>
         </div>
         <div class="role-btn__text">
@@ -50,8 +267,8 @@
       </button>
 
       <button class="role-btn" id="btnCreator" onclick="selectRole('creator')">
-        <div class="role-btn__icon role-btn__icon--creator">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <div class="role-btn__icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z"/>
           </svg>
         </div>
@@ -64,12 +281,31 @@
     </div>
 
     <p class="legal animate-in animate-in--d3">
-      By continuing, you agree to our
-      <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
+      By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
     </p>
 
   </div>
 
-  <script src="role.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const preRole   = urlParams.get('role');
+    if (preRole) setTimeout(() => selectRole(preRole), 200);
+
+    function selectRole(role) {
+      document.getElementById('btnBrand').classList.toggle('selected',   role === 'brand');
+      document.getElementById('btnCreator').classList.toggle('selected', role === 'creator');
+
+      const overlay = document.createElement('div');
+      overlay.className = 'page-transition';
+      document.body.appendChild(overlay);
+
+      requestAnimationFrame(() => {
+        overlay.classList.add('active');
+        setTimeout(() => {
+          window.location.href = `../login-page/login.html?role=${role}`;
+        }, 380);
+      });
+    }
+  </script>
 </body>
 </html>
