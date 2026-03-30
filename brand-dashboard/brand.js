@@ -1,6 +1,4 @@
-
 const ALL_CREATORS = [
-  // PAGE 1
   {
     id: 0,
     name: "Sarah Mitchell",
@@ -145,7 +143,6 @@ const ALL_CREATORS = [
       { l: "Global", p: 80 },
     ],
   },
-  // PAGE 2
   {
     id: 6,
     name: "Priya Sharma",
@@ -290,7 +287,6 @@ const ALL_CREATORS = [
       { l: "EU/US", p: 74 },
     ],
   },
-  // PAGE 3
   {
     id: 12,
     name: "Devon Williams",
@@ -437,10 +433,9 @@ const ALL_CREATORS = [
   },
 ];
 
-//STATE
+// STATE
 let currentPage = 1;
 const PER_PAGE = 6;
-const TOTAL_PAGES = 3;
 let activeNiche = "all";
 let activeSort = "default";
 let searchQuery = "";
@@ -449,24 +444,73 @@ let requestsSent = 48;
 let shortlistedIds = new Set();
 let sentIds = new Set();
 let currentCreatorId = null;
+let drawerOpen = false;
 
-// THEME
+// ── THEME ──
+function syncMobileThemeToggle() {
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  const pill = document.getElementById("mobileThemeToggle");
+  const emoji = document.getElementById("mobileThemeEmoji");
+  const label = document.getElementById("mobileThemeLabel");
+  pill.classList.toggle("on", !isDark);
+  emoji.textContent = isDark ? "🌙" : "☀️";
+  label.textContent = isDark ? "Dark Mode" : "Light Mode";
+  document.getElementById("themeIcon").textContent = isDark ? "🌙" : "☀️";
+}
 function toggleTheme() {
   const html = document.documentElement;
   const isDark = html.getAttribute("data-theme") === "dark";
   html.setAttribute("data-theme", isDark ? "light" : "dark");
-  document.getElementById("themeIcon").textContent = isDark ? "☀️" : "🌙";
   localStorage.setItem("cb_theme", isDark ? "light" : "dark");
+  syncMobileThemeToggle();
 }
-// Restore saved theme
+function toggleThemeMobile() {
+  toggleTheme();
+}
 const savedTheme = localStorage.getItem("cb_theme");
 if (savedTheme) {
   document.documentElement.setAttribute("data-theme", savedTheme);
-  document.getElementById("themeIcon").textContent =
-    savedTheme === "light" ? "☀️" : "🌙";
+}
+syncMobileThemeToggle();
+
+// ── DRAWER ──
+function toggleDrawer() {
+  drawerOpen = !drawerOpen;
+  document.getElementById("mobileDrawer").classList.toggle("open", drawerOpen);
+  document.getElementById("hamburger").classList.toggle("open", drawerOpen);
+  document.body.style.overflow = drawerOpen ? "hidden" : "";
+}
+function closeDrawer() {
+  drawerOpen = false;
+  document.getElementById("mobileDrawer").classList.remove("open");
+  document.getElementById("hamburger").classList.remove("open");
+  document.body.style.overflow = "";
 }
 
-//SCROLL REVEAL
+// ── USER DROPDOWN ──
+function toggleUserDropdown() {
+  if (window.innerWidth <= 768) return;
+  const dd = document.getElementById("userDropdown");
+  dd.classList.toggle("hidden");
+}
+document.addEventListener("click", (e) => {
+  const dd = document.getElementById("userDropdown");
+  const pill = document.getElementById("userPill");
+  if (!dd.contains(e.target) && !pill.contains(e.target))
+    dd.classList.add("hidden");
+  const np = document.getElementById("notifPanel");
+  const nb = document.getElementById("notifBtn");
+  if (!np.contains(e.target) && !nb.contains(e.target))
+    np.classList.add("hidden");
+});
+
+// ── MOBILE NOTIFICATIONS ──
+function showMobileNotifications() {
+  closeDrawer();
+  document.getElementById("notifPanel").classList.remove("hidden");
+}
+
+// ── SCROLL REVEAL ──
 const revealObs = new IntersectionObserver(
   (entries) => {
     entries.forEach((e) => {
@@ -476,7 +520,7 @@ const revealObs = new IntersectionObserver(
       }
     });
   },
-  { threshold: 0.1 },
+  { threshold: 0.08 },
 );
 function observeReveals() {
   document
@@ -484,7 +528,7 @@ function observeReveals() {
     .forEach((el) => revealObs.observe(el));
 }
 
-//STAT COUNTERS 
+// ── COUNTERS ──
 const counterObs = new IntersectionObserver(
   (entries) => {
     entries.forEach((e) => {
@@ -512,7 +556,7 @@ function animateCounter(el) {
   requestAnimationFrame(tick);
 }
 
-//FILTER / SEARCH / SORT 
+// ── FILTER / SEARCH / SORT ──
 function getFilteredCreators() {
   let list = [...ALL_CREATORS];
   if (activeNiche !== "all")
@@ -532,7 +576,6 @@ function getFilteredCreators() {
     list.sort((a, b) => a.followersRaw - b.followersRaw);
   return list;
 }
-
 function handleSearch() {
   searchQuery = document
     .getElementById("searchInput")
@@ -541,7 +584,15 @@ function handleSearch() {
   currentPage = 1;
   renderPage();
 }
-
+function handleMobileSearch() {
+  searchQuery = document
+    .getElementById("mobileSearchInput")
+    .value.toLowerCase()
+    .trim();
+  currentPage = 1;
+  renderPage();
+  closeDrawer();
+}
 function filterByNiche(niche, btn) {
   activeNiche = niche;
   currentPage = 1;
@@ -551,7 +602,6 @@ function filterByNiche(niche, btn) {
   btn.classList.add("chip--active");
   renderPage();
 }
-
 const sortCycles = ["default", "followers", "engagement", "followers-asc"];
 const sortLabels = {
   default: "Sort",
@@ -568,23 +618,17 @@ function cycleSort() {
   renderPage();
 }
 
-//RENDER PAGE
+// ── RENDER ──
 function renderPage() {
   const filtered = getFilteredCreators();
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   if (currentPage > totalPages) currentPage = totalPages;
   const start = (currentPage - 1) * PER_PAGE;
   const pageCreators = filtered.slice(start, start + PER_PAGE);
-
-  // Count label
   document.getElementById("creatorCount").textContent =
     `Showing ${filtered.length} creator${filtered.length !== 1 ? "s" : ""}`;
-
-  // Render cards
   const grid = document.getElementById("creatorsGrid");
   grid.innerHTML = pageCreators.map((c, i) => creatorCardHTML(c, i)).join("");
-
-  // Tilt effect
   grid.querySelectorAll(".creator-card").forEach((card) => {
     card.addEventListener("mousemove", (e) => {
       const r = card.getBoundingClientRect();
@@ -596,14 +640,8 @@ function renderPage() {
       card.style.transform = "";
     });
   });
-
-  // Pagination
   renderPagination(totalPages);
-
-  // Extra sections for pages 2 & 3
   renderExtra();
-
-  // Reveal
   setTimeout(observeReveals, 50);
 }
 
@@ -616,39 +654,18 @@ function creatorCardHTML(c, i) {
   const isSaved = shortlistedIds.has(c.id);
   const platformSVG =
     {
-      ig: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>`,
-      yt: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor"/></svg>`,
-      tk: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>`,
+      ig: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>`,
+      yt: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor"/></svg>`,
+      tk: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>`,
     }[c.platformKey] || "";
-
-  return `
-  <div class="creator-card reveal ${delay}" data-id="${c.id}">
-    <div class="creator-card__top">
-      <div class="creator-avatar" style="background:${c.gradient}">${c.initials}</div>
-      <div class="creator-info"><h3>${c.name}</h3><span class="creator-niche">${c.niche}</span></div>
-      <div class="platform-icon platform-icon--${c.platformKey}">${platformSVG}</div>
-    </div>
-    <div class="creator-stats">
-      <div class="creator-stat"><span class="cs-label">Followers</span><span class="cs-val">${c.followers}</span></div>
-      <div class="creator-stat"><span class="cs-label">Engagement</span><span class="cs-val">${c.engagement} <span class="star">★</span></span></div>
-      <div class="creator-stat"><span class="cs-label">Avg. Views</span><span class="cs-val">${c.avgViews}</span></div>
-    </div>
-    <div class="creator-tags">${c.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
-    <div class="creator-actions">
-      <button class="btn-view" onclick="openProfile(${c.id})">View Profile</button>
-      <button class="btn-request ${isSent ? "sent" : ""}" onclick="openRequest(${c.id})">${isSent ? "✓ Sent" : "Send Request"}</button>
-      <button class="shortlist-btn ${isSaved ? "active" : ""}" onclick="toggleShortlist(${c.id}, this)" title="${isSaved ? "Remove from shortlist" : "Shortlist"}">♡</button>
-    </div>
-  </div>`;
+  return `<div class="creator-card reveal ${delay}" data-id="${c.id}"><div class="creator-card__top"><div class="creator-avatar" style="background:${c.gradient}">${c.initials}</div><div class="creator-info"><h3>${c.name}</h3><span class="creator-niche">${c.niche}</span></div><div class="platform-icon platform-icon--${c.platformKey}">${platformSVG}</div></div><div class="creator-stats"><div class="creator-stat"><span class="cs-label">Followers</span><span class="cs-val">${c.followers}</span></div><div class="creator-stat"><span class="cs-label">Engagement</span><span class="cs-val">${c.engagement} <span class="star">★</span></span></div><div class="creator-stat"><span class="cs-label">Avg. Views</span><span class="cs-val">${c.avgViews}</span></div></div><div class="creator-tags">${c.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div><div class="creator-actions"><button class="btn-view" onclick="openProfile(${c.id})">View Profile</button><button class="btn-request ${isSent ? "sent" : ""}" onclick="openRequest(${c.id})">${isSent ? "✓ Sent" : "Send Request"}</button><button class="shortlist-btn ${isSaved ? "active" : ""}" onclick="toggleShortlist(${c.id},this)" title="${isSaved ? "Remove" : "Shortlist"}">${isSaved ? "♥" : "♡"}</button></div></div>`;
 }
 
-//PAGINATION
 function renderPagination(totalPages) {
   const el = document.getElementById("pagination");
-  let html = `<button class="page-btn ${currentPage === 1 ? "page-btn--disabled" : ""}" onclick="goPage(${currentPage - 1})">← Previous</button>`;
-  for (let i = 1; i <= totalPages; i++) {
+  let html = `<button class="page-btn ${currentPage === 1 ? "page-btn--disabled" : ""}" onclick="goPage(${currentPage - 1})">← Prev</button>`;
+  for (let i = 1; i <= totalPages; i++)
     html += `<button class="page-btn ${i === currentPage ? "page-btn--active" : ""}" onclick="goPage(${i})">${i}</button>`;
-  }
   html += `<button class="page-btn ${currentPage === totalPages ? "page-btn--disabled" : ""}" onclick="goPage(${currentPage + 1})">Next →</button>`;
   el.innerHTML = html;
 }
@@ -659,35 +676,25 @@ function goPage(page) {
   currentPage = page;
   renderPage();
   window.scrollTo({
-    top: document.getElementById("creatorsGrid").offsetTop - 100,
+    top: document.getElementById("creatorsGrid").offsetTop - 90,
     behavior: "smooth",
   });
 }
 
-//pages 2 AND 3 
 function renderExtra() {
   const el = document.getElementById("extraSections");
   if (currentPage === 1) {
     el.innerHTML = "";
     return;
   }
-
-  if (currentPage === 2) {
-    el.innerHTML = `
-    ${trendingSection()}
-    ${campaignSection()}
-    `;
-  } else if (currentPage === 3) {
-    el.innerHTML = `
-    ${savedSection()}
-    ${analyticsSection()}
-    `;
-  }
+  if (currentPage === 2) el.innerHTML = trendingSection() + campaignSection();
+  else if (currentPage === 3)
+    el.innerHTML = savedSection() + analyticsSection();
   setTimeout(observeReveals, 80);
 }
 
 function trendingSection() {
-  const trending = [
+  const t = [
     {
       initials: "KA",
       gradient: "linear-gradient(135deg,#2dc653,#007f5f)",
@@ -724,31 +731,11 @@ function trendingSection() {
       growth: "+15% this week",
     },
   ];
-  return `
-  <div class="extra-section reveal">
-    <div class="extra-section__header">
-      <div><h3 class="extra-section__title">🔥 Trending This Week</h3><p class="extra-section__sub">Creators with fastest-growing audiences right now</p></div>
-      <a href="#" class="extra-section__link">See all →</a>
-    </div>
-    <div class="trending-row">
-      ${trending
-        .map(
-          (t, i) => `
-      <div class="trending-card">
-        <div class="trending-rank">#${i + 1} Trending</div>
-        <div class="trending-avatar" style="background:${t.gradient}">${t.initials}</div>
-        <div class="trending-name">${t.name}</div>
-        <div class="trending-niche">${t.niche}</div>
-        <div class="trending-growth">📈 ${t.growth}</div>
-      </div>`,
-        )
-        .join("")}
-    </div>
-  </div>`;
+  return `<div class="extra-section reveal"><div class="extra-section__header"><div><h3 class="extra-section__title">🔥 Trending This Week</h3><p class="extra-section__sub">Creators with fastest-growing audiences</p></div><a href="#" class="extra-section__link">See all →</a></div><div class="trending-row">${t.map((x, i) => `<div class="trending-card"><div class="trending-rank">#${i + 1} Trending</div><div class="trending-avatar" style="background:${x.gradient}">${x.initials}</div><div class="trending-name">${x.name}</div><div class="trending-niche">${x.niche}</div><div class="trending-growth">📈 ${x.growth}</div></div>`).join("")}</div></div>`;
 }
 
 function campaignSection() {
-  const campaigns = [
+  const c = [
     {
       name: "Summer Glow Campaign",
       creator: "Sarah Mitchell",
@@ -810,104 +797,20 @@ function campaignSection() {
       end: "Aug 15",
     },
   ];
-  return `
-  <div class="extra-section reveal reveal--d2">
-    <div class="extra-section__header">
-      <div><h3 class="extra-section__title">📋 My Campaigns</h3><p class="extra-section__sub">Track your active and upcoming collaborations</p></div>
-      <a href="#" class="extra-section__link">Manage all →</a>
-    </div>
-    <div class="campaign-board">
-      ${campaigns
-        .map(
-          (c) => `
-      <div class="campaign-card">
-        <div class="campaign-status campaign-status--${c.status}">● ${c.statusLabel}</div>
-        <div class="campaign-name">${c.name}</div>
-        <div class="campaign-meta">with ${c.creator}</div>
-        ${
-          c.progress > 0
-            ? `
-        <div class="campaign-progress">
-          <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--muted);margin-bottom:4px"><span>Progress</span><span>${c.progress}%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:${c.progress}%"></div></div>
-        </div>`
-            : ""
-        }
-        <div class="campaign-footer"><span>Budget: ${c.budget}</span><span>${c.start} – ${c.end}</span></div>
-      </div>`,
-        )
-        .join("")}
-    </div>
-  </div>`;
+  return `<div class="extra-section reveal reveal--d2"><div class="extra-section__header"><div><h3 class="extra-section__title">📋 My Campaigns</h3><p class="extra-section__sub">Track your active collaborations</p></div><a href="#" class="extra-section__link">Manage all →</a></div><div class="campaign-board">${c.map((x) => `<div class="campaign-card"><div class="campaign-status campaign-status--${x.status}">● ${x.statusLabel}</div><div class="campaign-name">${x.name}</div><div class="campaign-meta">with ${x.creator}</div>${x.progress > 0 ? `<div><div style="display:flex;justify-content:space-between;font-size:0.76rem;color:var(--muted);margin-bottom:4px"><span>Progress</span><span>${x.progress}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${x.progress}%"></div></div></div>` : ""}<div class="campaign-footer"><span>${x.budget}</span><span>${x.start} – ${x.end}</span></div></div>`).join("")}</div></div>`;
 }
 
 function savedSection() {
   const saved = ALL_CREATORS.filter((c) => shortlistedIds.has(c.id));
   const display = saved.length > 0 ? saved : ALL_CREATORS.slice(0, 4);
-  return `
-  <div class="extra-section reveal">
-    <div class="extra-section__header">
-      <div><h3 class="extra-section__title">⭐ Shortlisted Creators</h3><p class="extra-section__sub">${saved.length > 0 ? `${saved.length} creators saved` : "Creators you've bookmarked"}</p></div>
-      <a href="#" class="extra-section__link">View all →</a>
-    </div>
-    <div class="saved-grid">
-      ${display
-        .map(
-          (c) => `
-      <div class="saved-card" onclick="openProfile(${c.id})">
-        <div class="saved-avatar" style="background:${c.gradient}">${c.initials}</div>
-        <div class="saved-name">${c.name}</div>
-        <div class="saved-niche">${c.niche}</div>
-        <div class="saved-followers">${c.followers} followers</div>
-      </div>`,
-        )
-        .join("")}
-    </div>
-  </div>`;
+  return `<div class="extra-section reveal"><div class="extra-section__header"><div><h3 class="extra-section__title">⭐ Shortlisted Creators</h3><p class="extra-section__sub">${saved.length > 0 ? `${saved.length} creators saved` : "Creators you've bookmarked"}</p></div><a href="#" class="extra-section__link">View all →</a></div><div class="saved-grid">${display.map((c) => `<div class="saved-card" onclick="openProfile(${c.id})"><div class="saved-avatar" style="background:${c.gradient}">${c.initials}</div><div class="saved-name">${c.name}</div><div class="saved-niche">${c.niche}</div><div class="saved-followers">${c.followers} followers</div></div>`).join("")}</div></div>`;
 }
 
 function analyticsSection() {
-  return `
-  <div class="extra-section reveal reveal--d2">
-    <div class="extra-section__header">
-      <div><h3 class="extra-section__title">📊 Campaign Analytics</h3><p class="extra-section__sub">Performance overview across all your campaigns</p></div>
-      <a href="#" class="extra-section__link">Full report →</a>
-    </div>
-    <div class="analytics-grid">
-      <div class="analytics-card">
-        <div class="analytics-title">Monthly Requests Sent</div>
-        <div class="bar-chart" id="barChart">
-          ${["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
-            .map((m, i) => {
-              const h = [30, 45, 55, 40, 70, 85][i];
-              return `<div class="bar-col"><div class="bar" style="height:${h}%"></div><div class="bar-label">${m}</div></div>`;
-            })
-            .join("")}
-        </div>
-      </div>
-      <div class="analytics-card">
-        <div class="analytics-title">Creator Niche Breakdown</div>
-        <div class="donut-wrap">
-          <svg class="donut" viewBox="0 0 36 36" width="90" height="90">
-            <circle cx="18" cy="18" r="14" fill="none" stroke="var(--border)" stroke-width="4"/>
-            <circle cx="18" cy="18" r="14" fill="none" stroke="#f5c518" stroke-width="4" stroke-dasharray="35 65" stroke-dashoffset="0"/>
-            <circle cx="18" cy="18" r="14" fill="none" stroke="#06d6a0" stroke-width="4" stroke-dasharray="25 75" stroke-dashoffset="-35"/>
-            <circle cx="18" cy="18" r="14" fill="none" stroke="#4cc9f0" stroke-width="4" stroke-dasharray="20 80" stroke-dashoffset="-60"/>
-            <circle cx="18" cy="18" r="14" fill="none" stroke="#f72585" stroke-width="4" stroke-dasharray="20 80" stroke-dashoffset="-80"/>
-          </svg>
-          <div class="donut-legend">
-            <div class="legend-row"><span class="legend-dot" style="background:#f5c518"></span><span class="legend-label">Fashion</span><span class="legend-pct">35%</span></div>
-            <div class="legend-row"><span class="legend-dot" style="background:#06d6a0"></span><span class="legend-label">Fitness</span><span class="legend-pct">25%</span></div>
-            <div class="legend-row"><span class="legend-dot" style="background:#4cc9f0"></span><span class="legend-label">Tech</span><span class="legend-pct">20%</span></div>
-            <div class="legend-row"><span class="legend-dot" style="background:#f72585"></span><span class="legend-label">Other</span><span class="legend-pct">20%</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>`;
+  return `<div class="extra-section reveal reveal--d2"><div class="extra-section__header"><div><h3 class="extra-section__title">📊 Campaign Analytics</h3><p class="extra-section__sub">Performance overview</p></div><a href="#" class="extra-section__link">Full report →</a></div><div class="analytics-grid"><div class="analytics-card"><div class="analytics-title">Monthly Requests Sent</div><div class="bar-chart">${["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) => `<div class="bar-col"><div class="bar" style="height:${[30, 45, 55, 40, 70, 85][i]}%"></div><div class="bar-label">${m}</div></div>`).join("")}</div></div><div class="analytics-card"><div class="analytics-title">Creator Niche Breakdown</div><div class="donut-wrap"><svg class="donut" viewBox="0 0 36 36" width="88" height="88"><circle cx="18" cy="18" r="14" fill="none" stroke="var(--border)" stroke-width="4"/><circle cx="18" cy="18" r="14" fill="none" stroke="#f5c518" stroke-width="4" stroke-dasharray="35 65" stroke-dashoffset="0"/><circle cx="18" cy="18" r="14" fill="none" stroke="#06d6a0" stroke-width="4" stroke-dasharray="25 75" stroke-dashoffset="-35"/><circle cx="18" cy="18" r="14" fill="none" stroke="#4cc9f0" stroke-width="4" stroke-dasharray="20 80" stroke-dashoffset="-60"/><circle cx="18" cy="18" r="14" fill="none" stroke="#f72585" stroke-width="4" stroke-dasharray="20 80" stroke-dashoffset="-80"/></svg><div class="donut-legend"><div class="legend-row"><span class="legend-dot" style="background:#f5c518"></span><span class="legend-label">Fashion</span><span class="legend-pct">35%</span></div><div class="legend-row"><span class="legend-dot" style="background:#06d6a0"></span><span class="legend-label">Fitness</span><span class="legend-pct">25%</span></div><div class="legend-row"><span class="legend-dot" style="background:#4cc9f0"></span><span class="legend-label">Tech</span><span class="legend-pct">20%</span></div><div class="legend-row"><span class="legend-dot" style="background:#f72585"></span><span class="legend-label">Other</span><span class="legend-pct">20%</span></div></div></div></div></div></div>`;
 }
 
-//SHORTLIST
+// ── SHORTLIST ──
 function toggleShortlist(id, btn) {
   if (shortlistedIds.has(id)) {
     shortlistedIds.delete(id);
@@ -926,27 +829,23 @@ function toggleShortlist(id, btn) {
   }
 }
 
-//NOTIFICATIONS
+// ── NOTIFICATIONS ──
 function toggleNotifications() {
   document.getElementById("notifPanel").classList.toggle("hidden");
 }
-document.addEventListener("click", (e) => {
-  const p = document.getElementById("notifPanel"),
-    b = document.getElementById("notifBtn");
-  if (!p.contains(e.target) && !b.contains(e.target)) p.classList.add("hidden");
-});
 function addNotification(msg) {
   notifications.unshift({ msg, time: "Just now" });
   const badge = document.getElementById("notifBadge");
   badge.textContent = notifications.length;
   badge.classList.add("show");
+  // mobile badge
+  const mb = document.getElementById("mobileNotifCount");
+  mb.textContent = notifications.length;
+  mb.style.display = "inline";
   document.getElementById("notifList").innerHTML = notifications
     .map(
-      (n) => `
-    <div class="notif-item">
-      <div class="notif-dot"></div>
-      <div><div class="notif-text">${n.msg}</div><div class="notif-time">${n.time}</div></div>
-    </div>`,
+      (n) =>
+        `<div class="notif-item"><div class="notif-dot"></div><div><div class="notif-text">${n.msg}</div><div class="notif-time">${n.time}</div></div></div>`,
     )
     .join("");
 }
@@ -956,9 +855,11 @@ function clearNotifications() {
     '<div class="notif-empty">No notifications yet</div>';
   const b = document.getElementById("notifBadge");
   b.classList.remove("show");
+  const mb = document.getElementById("mobileNotifCount");
+  mb.style.display = "none";
 }
 
-//PROFILE MODAL
+// ── PROFILE MODAL ──
 function openProfile(id) {
   const c = ALL_CREATORS.find((x) => x.id === id);
   currentCreatorId = id;
@@ -968,10 +869,8 @@ function openProfile(id) {
   document.getElementById("pmNiche").textContent = c.niche;
   document.getElementById("pmPlatform").textContent = "📱 " + c.platform;
   document.getElementById("pmBio").textContent = c.bio;
-  document.getElementById("pmStats").innerHTML = `
-    <div class="pm-stat"><span class="pm-stat-val">${c.followers}</span><span class="pm-stat-label">Followers</span></div>
-    <div class="pm-stat"><span class="pm-stat-val">${c.engagement}</span><span class="pm-stat-label">Engagement</span></div>
-    <div class="pm-stat"><span class="pm-stat-val">${c.avgViews}</span><span class="pm-stat-label">Avg. Views</span></div>`;
+  document.getElementById("pmStats").innerHTML =
+    `<div class="pm-stat"><span class="pm-stat-val">${c.followers}</span><span class="pm-stat-label">Followers</span></div><div class="pm-stat"><span class="pm-stat-val">${c.engagement}</span><span class="pm-stat-label">Engagement</span></div><div class="pm-stat"><span class="pm-stat-val">${c.avgViews}</span><span class="pm-stat-label">Avg. Views</span></div>`;
   document.getElementById("pmTags").innerHTML = c.tags
     .map((t) => `<span class="tag">${t}</span>`)
     .join("");
@@ -983,12 +882,8 @@ function openProfile(id) {
     .join("");
   document.getElementById("pmDemo").innerHTML = c.demo
     .map(
-      (d) => `
-    <div class="demo-row">
-      <span class="demo-label">${d.l}</span>
-      <div class="demo-bar"><div class="demo-fill" style="width:0%" data-pct="${d.p}%"></div></div>
-      <span class="demo-pct">${d.p}%</span>
-    </div>`,
+      (d) =>
+        `<div class="demo-row"><span class="demo-label">${d.l}</span><div class="demo-bar"><div class="demo-fill" style="width:0%" data-pct="${d.p}%"></div></div><span class="demo-pct">${d.p}%</span></div>`,
     )
     .join("");
   document.getElementById("pmRequestBtn").onclick = () => {
@@ -1011,7 +906,7 @@ function closeProfileOnBg(e) {
   if (e.target === document.getElementById("profileModal")) closeProfile();
 }
 
-//REQUEST MODAL
+// ── REQUEST MODAL ──
 function openRequest(id) {
   const c = ALL_CREATORS.find((x) => x.id === id);
   currentCreatorId = id;
@@ -1041,7 +936,7 @@ function closeRequestOnBg(e) {
   if (e.target === document.getElementById("requestModal")) closeRequest();
 }
 
-//SEND REQUEST
+// ── SEND REQUEST ──
 function sendRequest() {
   const company = document.getElementById("rmCompany").value.trim();
   const budget = document.getElementById("rmBudget").value;
@@ -1080,14 +975,11 @@ function sendRequest() {
     );
     document.getElementById("successMsg").textContent =
       `Your collaboration request has been sent to ${c.name}. They'll review it and get back to you soon!`;
-    document.getElementById("successDetails").innerHTML = `
-      <div class="success-detail-row"><span class="sdl">Creator</span><span class="sdv">${c.name}</span></div>
-      <div class="success-detail-row"><span class="sdl">Company</span><span class="sdv">${company}</span></div>
-      <div class="success-detail-row"><span class="sdl">Budget</span><span class="sdv">${budget}</span></div>
-      <div class="success-detail-row"><span class="sdl">Duration</span><span class="sdv">${duration}</span></div>`;
+    document.getElementById("successDetails").innerHTML =
+      `<div class="success-detail-row"><span class="sdl">Creator</span><span class="sdv">${c.name}</span></div><div class="success-detail-row"><span class="sdl">Company</span><span class="sdv">${company}</span></div><div class="success-detail-row"><span class="sdl">Budget</span><span class="sdv">${budget}</span></div><div class="success-detail-row"><span class="sdl">Duration</span><span class="sdv">${duration}</span></div>`;
     document.getElementById("successOverlay").classList.remove("hidden");
     launchConfetti();
-    renderPage(); // refresh cards to show sent state
+    renderPage();
   }, 1400);
 }
 function closeSuccess() {
@@ -1095,7 +987,7 @@ function closeSuccess() {
   document.body.style.overflow = "";
 }
 
-// ── CONFETTI ──────────────────────────────────────────
+// ── CONFETTI ──
 function launchConfetti() {
   const colors = ["#f5c518", "#06d6a0", "#4cc9f0", "#f72585", "#ffffff"];
   for (let i = 0; i < 70; i++) {
@@ -1107,14 +999,39 @@ function launchConfetti() {
   }
 }
 
-//KEYBOARD
+// ── LOGOUT ──
+function showLogout() {
+  document.getElementById("userDropdown").classList.add("hidden");
+  document.getElementById("logoutCard").style.display = "block";
+  document.getElementById("loggedOutCard").style.display = "none";
+  document.getElementById("logoutPage").classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+function hideLogout() {
+  document.getElementById("logoutPage").classList.remove("active");
+  document.body.style.overflow = "";
+}
+function confirmLogout() {
+  document.getElementById("logoutCard").style.display = "none";
+  document.getElementById("loggedOutCard").classList.add("active");
+  document.getElementById("loggedOutCard").style.display = "block";
+}
+function loginAgain() {
+  document.getElementById("logoutPage").classList.remove("active");
+  document.getElementById("loggedOutCard").classList.remove("active");
+  document.body.style.overflow = "";
+}
+
+// ── KEYBOARD ──
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     closeProfile();
     closeRequest();
     closeSuccess();
+    hideLogout();
+    closeDrawer();
   }
 });
 
-//INIT
+// ── INIT ──
 renderPage();
