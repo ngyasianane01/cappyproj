@@ -11,6 +11,12 @@ document.documentElement.setAttribute("data-theme", savedTheme);
 document.getElementById("themeIcon").textContent =
   savedTheme === "dark" ? "☀️" : "🌙";
 
+// LOGOUT
+function handleLogout() {
+  sessionStorage.removeItem("cb_profile");
+  // Navigation to index.html is handled by the anchor href
+}
+
 //USER NAME from session
 const profile = JSON.parse(sessionStorage.getItem("cb_profile") || "{}");
 const userName = profile.name || "Sarah";
@@ -27,7 +33,7 @@ const revealObs = new IntersectionObserver(
       }
     });
   },
-  { threshold: 0.1 },
+  { threshold: 0.1 }
 );
 document.querySelectorAll(".reveal").forEach((el) => revealObs.observe(el));
 
@@ -41,11 +47,9 @@ const counterObs = new IntersectionObserver(
       }
     });
   },
-  { threshold: 0.5 },
+  { threshold: 0.5 }
 );
-document
-  .querySelectorAll("[data-target]")
-  .forEach((el) => counterObs.observe(el));
+document.querySelectorAll("[data-target]").forEach((el) => counterObs.observe(el));
 function animateNum(el) {
   const target = parseInt(el.dataset.target);
   const dur = 1400;
@@ -105,7 +109,7 @@ function renderNotifications() {
     <div class="notif-item">
       <div class="notif-dot notif-dot--${n.dot}"></div>
       <div><div class="notif-text">${n.msg}</div><div class="notif-time">${n.time}</div></div>
-    </div>`,
+    </div>`
     )
     .join("");
 }
@@ -188,11 +192,10 @@ function handleRequest(id, action) {
     item.querySelector(".status-badge").textContent = "Accepted";
     item.querySelector(".status-badge").className =
       "status-badge status-badge--accepted";
-    item.querySelector(".request-actions").innerHTML =
-      `<button class="btn-details-sm" onclick="openRequestDetail(${id})">View Details →</button>`;
+    item.querySelector(".request-actions").innerHTML = `<button class="btn-details-sm" onclick="openRequestDetail(${id})">View Details →</button>`;
     addNotification(
       `You <strong>accepted</strong> the collaboration with ${req.brand} 🎉`,
-      "green",
+      "green"
     );
     showToast(`✓ Accepted! ${req.brand} will be notified.`);
   } else {
@@ -205,7 +208,7 @@ function handleRequest(id, action) {
     item.querySelector(".request-actions").innerHTML = "";
     addNotification(
       `You <strong>declined</strong> the request from ${req.brand}`,
-      "yellow",
+      "yellow"
     );
     showToast(`✕ Declined request from ${req.brand}.`);
   }
@@ -213,8 +216,7 @@ function handleRequest(id, action) {
   // Update pending count
   const pending = requests.filter((r) => r.status === "pending").length;
   document.getElementById("requestCount").textContent = `${pending} pending`;
-  document.getElementById("welcomeSub").innerHTML =
-    `You have <strong>${pending} new collaboration request${pending !== 1 ? "s" : ""}</strong>`;
+  document.getElementById("welcomeSub").innerHTML = `You have <strong>${pending} new collaboration request${pending !== 1 ? "s" : ""}</strong>`;
 }
 
 //REQUEST DETAIL MODAL
@@ -326,7 +328,7 @@ function openCollabDetail(id) {
         <div class="timeline-item">
           <div class="timeline-dot ${m.done ? "timeline-dot--done" : i === c.milestones.findIndex((x) => !x.done) ? "timeline-dot--active" : "timeline-dot--pending"}"></div>
           <div class="timeline-text"><strong>${m.label}</strong>${m.done ? " — Completed" : i === c.milestones.findIndex((x) => !x.done) ? " — In Progress" : " — Upcoming"}</div>
-        </div>`,
+        </div>`
         )
         .join("")}
       </div>
@@ -355,18 +357,20 @@ function openEarningsReport() {
       <div class="report-stat"><div class="report-stat-val">+24%</div><div class="report-stat-label">Month Growth</div></div>
     </div>
     <div class="modal-section"><h4>Transaction History</h4>
-      <table class="report-table">
-        <thead><tr><th>Campaign</th><th>Brand</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-        <tbody>
-          <tr><td>Fashion Showcase</td><td>EcoStyle</td><td class="green">$1,200</td><td class="green">Paid</td><td>Mar 10</td></tr>
-          <tr><td>Spring Launch</td><td>TechFlow</td><td class="yellow">$2,500</td><td class="yellow">Pending</td><td>Mar 15</td></tr>
-          <tr><td>Wellness Series</td><td>HealthHub</td><td class="yellow">$2,800</td><td class="yellow">Pending</td><td>Apr 5</td></tr>
-          <tr><td>Beauty Campaign</td><td>GlowCo</td><td class="green">$1,500</td><td class="green">Paid</td><td>Feb 28</td></tr>
-          <tr><td>Tech Review</td><td>GadgetHub</td><td class="green">$900</td><td class="green">Paid</td><td>Feb 15</td></tr>
-          <tr><td>Food Partnership</td><td>TasteLab</td><td class="green">$1,200</td><td class="green">Paid</td><td>Jan 30</td></tr>
-          <tr><td>Travel Promo</td><td>WanderCo</td><td class="green">$2,100</td><td class="green">Paid</td><td>Jan 15</td></tr>
-        </tbody>
-      </table>
+      <div class="report-table-wrapper">
+        <table class="report-table">
+          <thead><tr><th>Campaign</th><th>Brand</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td>Fashion Showcase</td><td>EcoStyle</td><td class="green">$1,200</td><td class="green">Paid</td><td>Mar 10</td></tr>
+            <tr><td>Spring Launch</td><td>TechFlow</td><td class="yellow">$2,500</td><td class="yellow">Pending</td><td>Mar 15</td></tr>
+            <tr><td>Wellness Series</td><td>HealthHub</td><td class="yellow">$2,800</td><td class="yellow">Pending</td><td>Apr 5</td></tr>
+            <tr><td>Beauty Campaign</td><td>GlowCo</td><td class="green">$1,500</td><td class="green">Paid</td><td>Feb 28</td></tr>
+            <tr><td>Tech Review</td><td>GadgetHub</td><td class="green">$900</td><td class="green">Paid</td><td>Feb 15</td></tr>
+            <tr><td>Food Partnership</td><td>TasteLab</td><td class="green">$1,200</td><td class="green">Paid</td><td>Jan 30</td></tr>
+            <tr><td>Travel Promo</td><td>WanderCo</td><td class="green">$2,100</td><td class="green">Paid</td><td>Jan 15</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="modal-actions"><button class="modal-btn-outline" onclick="document.getElementById('earningsModal').classList.add('hidden')">Close</button></div>
   `;
@@ -406,18 +410,9 @@ function submitPitch(brandName) {
   const rate = document.getElementById("pitchRate").value;
   const msg = document.getElementById("pitchMsg").value.trim();
   const errEl = document.getElementById("pitchError");
-  if (!idea) {
-    errEl.textContent = "Please enter your campaign idea.";
-    return;
-  }
-  if (!rate) {
-    errEl.textContent = "Please select your rate.";
-    return;
-  }
-  if (!msg) {
-    errEl.textContent = "Please write your message.";
-    return;
-  }
+  if (!idea) { errEl.textContent = "Please enter your campaign idea."; return; }
+  if (!rate) { errEl.textContent = "Please select your rate."; return; }
+  if (!msg) { errEl.textContent = "Please write your message."; return; }
   errEl.textContent = "";
 
   const btn = document.querySelector("#pitchContent .modal-btn-primary");
@@ -427,72 +422,21 @@ function submitPitch(brandName) {
 
   setTimeout(() => {
     document.getElementById("pitchModal").classList.add("hidden");
-    addNotification(
-      `Your pitch to <strong>${brandName}</strong> was sent! 🚀`,
-      "green",
-    );
+    addNotification(`Your pitch to <strong>${brandName}</strong> was sent! 🚀`, "green");
     showToast(`🚀 Pitch sent to ${brandName}!`);
   }, 1200);
 }
 
 //FIND BRANDS MODAL
 const allBrands = [
-  {
-    initials: "NK",
-    name: "Nike",
-    niche: "Sports & Fitness",
-    budget: "$5K–$20K",
-    gradient: "linear-gradient(135deg,#000,#333)",
-  },
-  {
-    initials: "SM",
-    name: "Samsung",
-    niche: "Technology",
-    budget: "$10K–$50K",
-    gradient: "linear-gradient(135deg,#1428a0,#4cc9f0)",
-  },
-  {
-    initials: "ZR",
-    name: "Zara",
-    niche: "Fashion",
-    budget: "$3K–$15K",
-    gradient: "linear-gradient(135deg,#222,#555)",
-  },
-  {
-    initials: "NE",
-    name: "Nespresso",
-    niche: "Food & Beverage",
-    budget: "$2K–$8K",
-    gradient: "linear-gradient(135deg,#8B0000,#c62828)",
-  },
-  {
-    initials: "LU",
-    name: "Lululemon",
-    niche: "Fitness & Wellness",
-    budget: "$5K–$25K",
-    gradient: "linear-gradient(135deg,#4a148c,#7b1fa2)",
-  },
-  {
-    initials: "AP",
-    name: "Apple",
-    niche: "Technology",
-    budget: "$20K+",
-    gradient: "linear-gradient(135deg,#555,#999)",
-  },
-  {
-    initials: "HM",
-    name: "H&M",
-    niche: "Fashion",
-    budget: "$2K–$10K",
-    gradient: "linear-gradient(135deg,#c62828,#e53935)",
-  },
-  {
-    initials: "SP",
-    name: "Spotify",
-    niche: "Music & Entertainment",
-    budget: "$5K–$30K",
-    gradient: "linear-gradient(135deg,#1DB954,#158a3e)",
-  },
+  { initials: "NK", name: "Nike", niche: "Sports & Fitness", budget: "$5K–$20K", gradient: "linear-gradient(135deg,#000,#333)" },
+  { initials: "SM", name: "Samsung", niche: "Technology", budget: "$10K–$50K", gradient: "linear-gradient(135deg,#1428a0,#4cc9f0)" },
+  { initials: "ZR", name: "Zara", niche: "Fashion", budget: "$3K–$15K", gradient: "linear-gradient(135deg,#222,#555)" },
+  { initials: "NE", name: "Nespresso", niche: "Food & Beverage", budget: "$2K–$8K", gradient: "linear-gradient(135deg,#8B0000,#c62828)" },
+  { initials: "LU", name: "Lululemon", niche: "Fitness & Wellness", budget: "$5K–$25K", gradient: "linear-gradient(135deg,#4a148c,#7b1fa2)" },
+  { initials: "AP", name: "Apple", niche: "Technology", budget: "$20K+", gradient: "linear-gradient(135deg,#555,#999)" },
+  { initials: "HM", name: "H&M", niche: "Fashion", budget: "$2K–$10K", gradient: "linear-gradient(135deg,#c62828,#e53935)" },
+  { initials: "SP", name: "Spotify", niche: "Music & Entertainment", budget: "$5K–$30K", gradient: "linear-gradient(135deg,#1DB954,#158a3e)" },
 ];
 function openFindBrands() {
   renderFindBrands(allBrands);
@@ -506,9 +450,7 @@ function renderFindBrands(brands) {
       <input type="text" placeholder="Search brands..." oninput="searchBrands(this.value)"/>
     </div>
     <div class="brands-grid" id="brandsGrid">
-      ${brands
-        .map(
-          (b) => `
+      ${brands.map((b) => `
       <div class="brand-card">
         <div class="brand-card__top">
           <div class="brand-card-logo" style="background:${b.gradient}">${b.initials}</div>
@@ -516,9 +458,7 @@ function renderFindBrands(brands) {
         </div>
         <div class="brand-card-budget">💰 ${b.budget}</div>
         <button class="brand-card-pitch-btn" onclick="document.getElementById('findBrandsModal').classList.add('hidden');openPitchModal('${b.name}')">Send Pitch →</button>
-      </div>`,
-        )
-        .join("")}
+      </div>`).join("")}
     </div>
   `;
 }
@@ -526,11 +466,9 @@ function searchBrands(q) {
   const filtered = allBrands.filter(
     (b) =>
       b.name.toLowerCase().includes(q.toLowerCase()) ||
-      b.niche.toLowerCase().includes(q.toLowerCase()),
+      b.niche.toLowerCase().includes(q.toLowerCase())
   );
-  document.getElementById("brandsGrid").innerHTML = filtered
-    .map(
-      (b) => `
+  document.getElementById("brandsGrid").innerHTML = filtered.map((b) => `
     <div class="brand-card">
       <div class="brand-card__top">
         <div class="brand-card-logo" style="background:${b.gradient}">${b.initials}</div>
@@ -538,9 +476,7 @@ function searchBrands(q) {
       </div>
       <div class="brand-card-budget">💰 ${b.budget}</div>
       <button class="brand-card-pitch-btn" onclick="document.getElementById('findBrandsModal').classList.add('hidden');openPitchModal('${b.name}')">Send Pitch →</button>
-    </div>`,
-    )
-    .join("");
+    </div>`).join("");
 }
 
 //CLOSE MODAL ON BACKGROUND
@@ -564,13 +500,7 @@ function showToast(msg) {
 //KEYBOARD ESC
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
-    [
-      "requestDetailModal",
-      "collabDetailModal",
-      "earningsModal",
-      "pitchModal",
-      "findBrandsModal",
-    ].forEach((id) => {
+    ["requestDetailModal", "collabDetailModal", "earningsModal", "pitchModal", "findBrandsModal"].forEach((id) => {
       document.getElementById(id).classList.add("hidden");
     });
   }
