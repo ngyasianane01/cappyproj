@@ -1012,9 +1012,15 @@ function hideLogout() {
   document.body.style.overflow = "";
 }
 function confirmLogout() {
+  // Clear session and show logged-out UI briefly, then redirect to landing page
+  try { sessionStorage.removeItem('cb_profile'); } catch (e) { /* ignore */ }
   document.getElementById("logoutCard").style.display = "none";
   document.getElementById("loggedOutCard").classList.add("active");
   document.getElementById("loggedOutCard").style.display = "block";
+  setTimeout(() => {
+    // navigate to landing page (root index.html)
+    window.location.href = "../index.html";
+  }, 600);
 }
 function loginAgain() {
   document.getElementById("logoutPage").classList.remove("active");

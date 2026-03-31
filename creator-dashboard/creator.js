@@ -1,20 +1,106 @@
 // THEME
+
+function setThemeLabel() {
+  const label = document.getElementById("themeLabel");
+  if (!label) return;
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  label.textContent = isDark ? "Dark Mode" : "Light Mode";
+}
+
 function toggleTheme() {
   const html = document.documentElement;
   const isDark = html.getAttribute("data-theme") === "dark";
   html.setAttribute("data-theme", isDark ? "light" : "dark");
-  document.getElementById("themeIcon").textContent = isDark ? "🌙" : "☀️";
+  const themeIconEl = document.getElementById("themeIcon");
+  if (themeIconEl) themeIconEl.textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "☀️" : "🌙";
   localStorage.setItem("cb_creator_theme", isDark ? "light" : "dark");
+  setThemeLabel();
+  syncMobileThemeToggle();
 }
+
 const savedTheme = localStorage.getItem("cb_creator_theme") || "light";
 document.documentElement.setAttribute("data-theme", savedTheme);
-document.getElementById("themeIcon").textContent =
-  savedTheme === "dark" ? "☀️" : "🌙";
+const _themeIconEl = document.getElementById("themeIcon");
+if (_themeIconEl) _themeIconEl.textContent = savedTheme === "dark" ? "☀️" : "🌙";
+setThemeLabel();
+syncMobileThemeToggle();
+let drawerOpen = false;
+function syncMobileThemeToggle() {
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  const pill = document.getElementById("mobileThemeToggle");
+  const emoji = document.getElementById("mobileThemeEmoji");
+  const label = document.getElementById("mobileThemeLabel");
+  if (pill) pill.classList.toggle("on", !isDark);
+  if (emoji) emoji.textContent = isDark ? "🌙" : "☀️";
+  if (label) label.textContent = isDark ? "Dark Mode" : "Light Mode";
+}
 
+function toggleMenu() {
+  const drawer = document.getElementById("mobileDrawer");
+  const btn = document.getElementById("hamburger");
+  if (!drawer || !btn) return;
+  // Only allow the drawer to open on narrow viewports
+  if (window.innerWidth > 768) return;
+  drawerOpen = !drawerOpen;
+  drawer.classList.toggle("open", drawerOpen);
+  drawer.setAttribute('aria-hidden', drawerOpen ? 'false' : 'true');
+  btn.classList.toggle("open", drawerOpen);
+  document.body.style.overflow = drawerOpen ? "hidden" : "";
+  syncMobileThemeToggle();
+}
+
+// Close mobile drawer if user taps outside (mobile only)
+window.addEventListener("click", (e) => {
+  if (window.innerWidth > 768) return;
+  const drawer = document.getElementById("mobileDrawer");
+  const btn = document.getElementById("hamburger");
+  if (!drawer || !btn) return;
+  const inside = e.target.closest(".nav") || e.target.closest("#mobileDrawer") || e.target.closest(".menu-toggle");
+  if (!inside && drawer.classList.contains("open")) {
+    drawer.classList.remove("open");
+    btn.classList.remove("open");
+    document.body.style.overflow = "";
+    drawerOpen = false;
+  }
+});
+
+function closeDrawer() {
+  drawerOpen = false;
+  const drawer = document.getElementById("mobileDrawer");
+  const btn = document.getElementById("hamburger");
+  if (drawer) {
+    drawer.classList.remove("open");
+    drawer.setAttribute('aria-hidden', 'true');
+  }
+  if (btn) btn.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+// Ensure drawer is closed when viewport becomes desktop-sized
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768 && drawerOpen) closeDrawer();
+});
+
+function toggleThemeMobile() {
+  toggleTheme();
+  syncMobileThemeToggle();
+}
+
+function showMobileNotifications() {
+  closeDrawer();
+  document.getElementById("notifPanel").classList.remove("hidden");
+}
+
+function handleMobileSearch() {
+  // simple passthrough: could hook into search logic
+  const q = document.getElementById("mobileSearchInput").value;
+  console.log("Mobile search:", q);
+}
 // LOGOUT
 function handleLogout() {
-  sessionStorage.removeItem("cb_profile");
-  // Navigation to index.html is handled by the anchor href
+  try { sessionStorage.removeItem("cb_profile"); } catch (e) { /* ignore */ }
+  // Ensure we always navigate back to the landing page (root index.html)
+  window.location.href = "../index.html";
 }
 
 //USER NAME from session
